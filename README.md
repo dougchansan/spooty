@@ -2,8 +2,10 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/dougchansan/spooty)](https://github.com/dougchansan/spooty)
 [![GitHub last commit](https://img.shields.io/github/last-commit/dougchansan/spooty)](https://github.com/dougchansan/spooty/commits/main)
 
-![spooty logo](assets/logo.svg)
 # Spooty - selfhosted music downloader
+> [!WARNING]
+> **Disclaimer:** Spooty is an independent, unofficial project. It is not affiliated with, endorsed by, sponsored by, or in any way connected to Spotify AB or any of its subsidiaries or affiliates. "Spotify" is a registered trademark of Spotify AB and is not used here to indicate any association.
+
 Spooty is a self-hosted music downloader.
 It allows download track/playlist/album from a streaming-service URL.
 It can also subscribe to a playlist or author page and download new songs upon release.
