@@ -1,10 +1,10 @@
 <a class="panel-block is-flex is-justify-content-space-between" *ngFor="let track of tracks$ | async">
   <div>
     <span>{{ track.artist }} - {{ track.name }}</span>&nbsp;
-    <a [href]="track.spotifyUrl"
+    <a [href]="track.streamingUrl"
        target="_blank"
-       class="has-text-primary margin-left" title="Spotify preview of track that will be downloaded">
-      <i class="fa-brands fa-spotify"></i>
+       class="has-text-primary margin-left" title="Preview of the track that will be downloaded">
+      <i class="fa-solid fa-music"></i>
     </a>&nbsp;
     <a [href]="track.youtubeUrl"
        target="_blank"

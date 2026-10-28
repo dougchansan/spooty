@@ -1,30 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TrackService } from '../track/track.service';
-import { SpotifyApiService } from './spotify-api.service';
+import { StreamingApiService } from './streaming-api.service';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fetch = require('isomorphic-unfetch');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { getDetails } = require('spotify-url-info')(fetch);
 
 @Injectable()
-export class SpotifyService {
+export class StreamingService {
   private readonly logger = new Logger(TrackService.name);
 
-  constructor(private readonly spotifyApiService: SpotifyApiService) {}
+  constructor(private readonly streamingApiService: StreamingApiService) {}
 
   isTrackUrl(url: string): boolean {
-    return this.spotifyApiService.isTrackUrl(url);
+    return this.streamingApiService.isTrackUrl(url);
   }
 
   async getTrackDetail(
-    spotifyUrl: string,
+    streamingUrl: string,
   ): Promise<{ name: string; artist: string; image: string }> {
-    this.logger.debug(`Get track ${spotifyUrl} on Spotify`);
+    this.logger.debug(`Get track ${streamingUrl} on the streaming service`);
     try {
-      return await this.spotifyApiService.getTrackMetadata(spotifyUrl);
+      return await this.streamingApiService.getTrackMetadata(streamingUrl);
     } catch (error) {
       this.logger.error(`Error getting track details: ${error.message}`);
-      const detail = await getDetails(spotifyUrl);
+      const detail = await getDetails(streamingUrl);
       return {
         name: detail.preview.title,
         artist: detail.preview.artist || 'Unknown Artist',
@@ -34,16 +34,16 @@ export class SpotifyService {
   }
 
   async getPlaylistDetail(
-    spotifyUrl: string,
+    streamingUrl: string,
   ): Promise<{ name: string; tracks: any[]; image: string }> {
-    this.logger.debug(`Get playlist ${spotifyUrl} on Spotify`);
+    this.logger.debug(`Get playlist ${streamingUrl} on the streaming service`);
 
     try {
       const metadata =
-        await this.spotifyApiService.getPlaylistMetadata(spotifyUrl);
+        await this.streamingApiService.getPlaylistMetadata(streamingUrl);
 
       const tracks =
-        await this.spotifyApiService.getAllPlaylistTracks(spotifyUrl);
+        await this.streamingApiService.getAllPlaylistTracks(streamingUrl);
 
       return {
         name: metadata.name,
@@ -52,7 +52,7 @@ export class SpotifyService {
       };
     } catch (error) {
       this.logger.error(`Error getting playlist details: ${error.message}`);
-      const detail = await getDetails(spotifyUrl);
+      const detail = await getDetails(streamingUrl);
       return {
         name: detail.preview.title,
         tracks: detail?.tracks ?? [],
@@ -61,13 +61,13 @@ export class SpotifyService {
     }
   }
 
-  async getPlaylistTracks(spotifyUrl: string): Promise<any[]> {
-    this.logger.debug(`Get playlist ${spotifyUrl} on Spotify`);
+  async getPlaylistTracks(streamingUrl: string): Promise<any[]> {
+    this.logger.debug(`Get playlist ${streamingUrl} on the streaming service`);
     try {
-      return await this.spotifyApiService.getAllPlaylistTracks(spotifyUrl);
+      return await this.streamingApiService.getAllPlaylistTracks(streamingUrl);
     } catch (error) {
       this.logger.error(`Error getting playlist tracks: ${error.message}`);
-      return (await getDetails(spotifyUrl)?.tracks) ?? [];
+      return (await getDetails(streamingUrl)?.tracks) ?? [];
     }
   }
 }

@@ -2,7 +2,7 @@ export interface Track {
   id: number;
   artist: string;
   name: string;
-  spotifyUrl: string;
+  streamingUrl: string;
   youtubeUrl: string;
   status: TrackStatusEnum;
   playlistId?: number;

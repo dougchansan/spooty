@@ -21,8 +21,8 @@ export class TrackEntity {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  spotifyUrl: string;
+  @Column({ nullable: true, name: 'spotifyUrl' })
+  streamingUrl: string;
 
   @Column({ nullable: true })
   youtubeUrl?: string;

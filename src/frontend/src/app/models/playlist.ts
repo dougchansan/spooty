@@ -1,7 +1,7 @@
 export interface Playlist {
   id: number;
   name?: string;
-  spotifyUrl: string;
+  streamingUrl: string;
   error?: string;
   active: boolean;
   isTrack?: boolean;

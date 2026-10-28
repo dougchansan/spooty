@@ -9,8 +9,8 @@ export class PlaylistEntity {
   @Column({ nullable: true })
   name?: string;
 
-  @Column()
-  spotifyUrl: string;
+  @Column({ name: 'spotifyUrl' })
+  streamingUrl: string;
 
   @Column({ nullable: true })
   error?: string;

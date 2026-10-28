@@ -5,8 +5,8 @@ const fetch = require('isomorphic-unfetch');
 const { getDetails } = require('spotify-url-info')(fetch);
 
 @Injectable()
-export class SpotifyApiService {
-  private readonly logger = new Logger(SpotifyApiService.name);
+export class StreamingApiService {
+  private readonly logger = new Logger(StreamingApiService.name);
   private embedToken: string | null = null;
   private embedTokenExpiry: number = 0;
 
@@ -20,7 +20,7 @@ export class SpotifyApiService {
       if (playlistIndex >= 0 && pathParts.length > playlistIndex + 1) {
         return pathParts[playlistIndex + 1].split('?')[0];
       }
-      throw new Error('Invalid Spotify playlist URL');
+      throw new Error('Invalid streaming-service playlist URL');
     } catch (error) {
       this.logger.error(`Failed to extract playlist ID: ${error.message}`);
       throw error;
@@ -44,7 +44,7 @@ export class SpotifyApiService {
       if (trackIndex >= 0 && pathParts.length > trackIndex + 1) {
         return pathParts[trackIndex + 1].split('?')[0];
       }
-      throw new Error('Invalid Spotify track URL');
+      throw new Error('Invalid streaming-service track URL');
     } catch (error) {
       this.logger.error(`Failed to extract track ID: ${error.message}`);
       throw error;
@@ -52,11 +52,11 @@ export class SpotifyApiService {
   }
 
   async getTrackMetadata(
-    spotifyUrl: string,
+    streamingUrl: string,
   ): Promise<{ name: string; artist: string; image: string }> {
     try {
-      this.logger.debug(`Getting track metadata for ${spotifyUrl}`);
-      const trackId = this.getTrackId(spotifyUrl);
+      this.logger.debug(`Getting track metadata for ${streamingUrl}`);
+      const trackId = this.getTrackId(streamingUrl);
       const accessToken = await this.getEmbedToken('track', trackId);
 
       const response = await fetch(
@@ -86,11 +86,11 @@ export class SpotifyApiService {
   }
 
   async getPlaylistMetadata(
-    spotifyUrl: string,
+    streamingUrl: string,
   ): Promise<{ name: string; image: string }> {
     try {
-      this.logger.debug(`Getting playlist metadata for ${spotifyUrl}`);
-      const detail = await getDetails(spotifyUrl);
+      this.logger.debug(`Getting playlist metadata for ${streamingUrl}`);
+      const detail = await getDetails(streamingUrl);
 
       return {
         name: detail.preview.title,
@@ -110,7 +110,7 @@ export class SpotifyApiService {
       return this.embedToken;
     }
 
-    this.logger.debug('Getting anonymous embed token from Spotify');
+    this.logger.debug('Getting anonymous embed token from the streaming service');
     const embedRes = await fetch(
       `https://open.spotify.com/embed/${type}/${id}`,
     );
@@ -160,11 +160,11 @@ export class SpotifyApiService {
       .filter((t) => t !== null);
   }
 
-  async getAllPlaylistTracks(spotifyUrl: string): Promise<any[]> {
+  async getAllPlaylistTracks(streamingUrl: string): Promise<any[]> {
     try {
-      this.logger.debug(`Getting all tracks for playlist ${spotifyUrl}`);
+      this.logger.debug(`Getting all tracks for playlist ${streamingUrl}`);
 
-      const playlistId = this.getPlaylistId(spotifyUrl);
+      const playlistId = this.getPlaylistId(streamingUrl);
       this.logger.debug(`Extracted playlist ID: ${playlistId}`);
 
       // Phase 1: Fetch embed page (gives us token + first 100 tracks as fallback)
@@ -205,7 +205,7 @@ export class SpotifyApiService {
 
       while (hasMoreTracks) {
         this.logger.debug(
-          `Fetching tracks from Spotify API with offset ${offset}`,
+          `Fetching tracks from streaming service API with offset ${offset}`,
         );
 
         const response = await fetch(
@@ -220,7 +220,7 @@ export class SpotifyApiService {
         if (!response.ok) {
           const errorText = await response.text();
           this.logger.error(
-            `Spotify API error at offset ${offset}: ${response.status} ${errorText}`,
+            `streaming service API error at offset ${offset}: ${response.status} ${errorText}`,
           );
 
           // On 429 (rate limit), wait and retry with backoff
@@ -281,7 +281,7 @@ export class SpotifyApiService {
         const data = await response.json();
 
         if (!data.items || data.items.length === 0) {
-          this.logger.debug('No more tracks to fetch from Spotify API');
+          this.logger.debug('No more tracks to fetch from streaming service API');
           hasMoreTracks = false;
           continue;
         }
@@ -311,7 +311,7 @@ export class SpotifyApiService {
           .filter((track) => track !== null);
 
         this.logger.debug(
-          `Retrieved ${pageTracks.length} tracks from Spotify API at offset ${offset}`,
+          `Retrieved ${pageTracks.length} tracks from streaming service API at offset ${offset}`,
         );
 
         if (pageTracks.length > 0) {
@@ -327,7 +327,7 @@ export class SpotifyApiService {
       }
 
       this.logger.debug(
-        `Total tracks retrieved from Spotify API: ${allTracks.length}`,
+        `Total tracks retrieved from streaming service API: ${allTracks.length}`,
       );
 
       // If API returned fewer tracks than embed, use embed data instead

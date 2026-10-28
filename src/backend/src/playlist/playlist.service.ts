@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import { Interval } from '@nestjs/schedule';
 import { TrackStatusEnum } from '../track/track.entity';
 import { UtilsService } from '../shared/utils.service';
-import { SpotifyService } from '../shared/spotify.service';
+import { StreamingService } from '../shared/streaming.service';
 
 enum WsPlaylistOperation {
   New = 'playlistNew',
@@ -28,7 +28,7 @@ export class PlaylistService {
     private repository: Repository<PlaylistEntity>,
     private readonly trackService: TrackService,
     private readonly utilsService: UtilsService,
-    private readonly spotifyService: SpotifyService,
+    private readonly streamingService: StreamingService,
   ) {}
 
   findAll(
@@ -49,7 +49,7 @@ export class PlaylistService {
 
   async create(playlist: PlaylistEntity): Promise<void> {
     // Detect if URL is for a single track or a playlist and route accordingly
-    const isTrack = this.spotifyService.isTrackUrl(playlist.spotifyUrl);
+    const isTrack = this.streamingService.isTrackUrl(playlist.streamingUrl);
 
     if (isTrack) {
       await this.createSingleTrack(playlist);
@@ -62,8 +62,8 @@ export class PlaylistService {
     let trackDetail: { name: string; artist: string; image: string };
     let playlist2Save: PlaylistEntity;
     try {
-      trackDetail = await this.spotifyService.getTrackDetail(
-        playlist.spotifyUrl,
+      trackDetail = await this.streamingService.getTrackDetail(
+        playlist.streamingUrl,
       );
       this.logger.debug(`Track detail retrieved: ${trackDetail.name}`);
 
@@ -87,7 +87,7 @@ export class PlaylistService {
           {
             artist: trackDetail.artist,
             name: trackDetail.name,
-            spotifyUrl: playlist.spotifyUrl,
+            streamingUrl: playlist.streamingUrl,
             coverUrl: trackDetail.image,
           },
           savedPlaylist,
@@ -104,7 +104,7 @@ export class PlaylistService {
     let detail: { tracks: any; name: any; image: any };
     let playlist2Save: PlaylistEntity;
     try {
-      detail = await this.spotifyService.getPlaylistDetail(playlist.spotifyUrl);
+      detail = await this.streamingService.getPlaylistDetail(playlist.streamingUrl);
       this.logger.debug(
         `Playlist detail retrieved with ${detail.tracks?.length || 0} tracks`,
       );
@@ -152,7 +152,7 @@ export class PlaylistService {
             {
               artist: track.artist,
               name: track.name,
-              spotifyUrl: track.previewUrl || null,
+              streamingUrl: track.previewUrl || null,
               coverUrl: track.coverUrl || savedPlaylist.coverUrl, // Use track's album art, fallback to playlist cover
             },
             savedPlaylist,
@@ -219,8 +219,8 @@ export class PlaylistService {
     for (const playlist of activePlaylists) {
       let tracks = [];
       try {
-        tracks = await this.spotifyService.getPlaylistTracks(
-          playlist.spotifyUrl,
+        tracks = await this.streamingService.getPlaylistTracks(
+          playlist.streamingUrl,
         );
         this.createPlaylistFolderStructure(playlist.name);
       } catch (err) {
@@ -230,7 +230,7 @@ export class PlaylistService {
         const track2Save = {
           artist: track.artist,
           name: track.name,
-          spotifyUrl: track.previewUrl,
+          streamingUrl: track.previewUrl,
         };
         const isExist = !!(
           await this.trackService.getAll({
