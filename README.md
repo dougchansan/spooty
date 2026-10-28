@@ -3,11 +3,11 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/dougchansan/spooty)](https://github.com/dougchansan/spooty/commits/main)
 
 ![spooty logo](assets/logo.svg)
-# Spooty - selfhosted Spotify downloader
-Spooty is a self-hosted Spotify downloader.
-It allows download track/playlist/album from the Spotify url.
+# Spooty - selfhosted music downloader
+Spooty is a self-hosted music downloader.
+It allows download track/playlist/album from a streaming-service URL.
 It can also subscribe to a playlist or author page and download new songs upon release.
-Spooty basically downloads nothing from Spotify, it only gets information from spotify and then finds relevant and downloadeds music on Youtube. 
+Spooty does not download anything from the streaming service itself; it only reads track information and then finds relevant music on Youtube.
 The project is based on NestJS and Angular.
 
 > [!IMPORTANT]
@@ -28,9 +28,8 @@ The project is based on NestJS and Angular.
 Recommended and the easiest way how to start to use of Spooty is using docker.
 
 > [!NOTE]
-> This fork does not require a Spotify Developer application. It reads playlist
-> metadata using an anonymous Spotify embed token, so there is no
-> `SPOTIFY_CLIENT_ID` or `SPOTIFY_CLIENT_SECRET` to configure.
+> This fork does not require a developer application or API credentials. It reads playlist
+> metadata anonymously, so there is nothing to configure.
 
 ### Docker
 
